@@ -1,31 +1,85 @@
--- Define user options here
-local opt = vim.opt
+-- Neovim Options and Core Keymaps
+
+-- =================================
+
+vim.deprecate = function () end
+
 vim.g.mapleader = " "
+
+local opt = vim.opt
+
+
+
+-- Indentation
 opt.tabstop = 2
 opt.shiftwidth = 2
-opt.ignorecase = true
-opt.smartcase = true
-opt.number = true
-opt.relativenumber = true
 opt.expandtab = true
 opt.autoindent = true
-opt.wrap = false
-opt.clipboard:append("unnamedplus")
-opt.mouse = ""
 
--- Some random keymaps for vertical window splits
+-- Search
+opt.ignorecase = true
+opt.smartcase = true
+
+-- Line Numbers
+opt.number = true
+opt.relativenumber = true
+
+-- General Behavior
+opt.wrap = false
+opt.clipboard:append("unnamedplus") -- Use system clipboard
+opt.mouse = "" -- Disable mouse
+
+-- Appearance stuff
+opt.fillchars = { eob = " " } -- Remove ~ from end of buffer
+
+-- Window Split Keymaps
 vim.keymap.set("n", "<leader>sv", "<C-w>v", { desc = "Split window vertically" })
 vim.keymap.set("n", "<leader>sx", "<cmd>close<CR>", { desc = "Close split" })
 
-vim.keymap.set("n", "<C-h>", "<C-w>j", { desc = "Switch to lower window" })
-vim.keymap.set("n", "<C-h>", "<C-w>k", { desc = "Switch to upper window" })
+-- Window Navigation Keymaps (fixed - no duplicate keys)
 vim.keymap.set("n", "<C-h>", "<C-w>h", { desc = "Switch to left window" })
+vim.keymap.set("n", "<C-j>", "<C-w>j", { desc = "Switch to lower window" })
+vim.keymap.set("n", "<C-k>", "<C-w>k", { desc = "Switch to upper window" })
 vim.keymap.set("n", "<C-l>", "<C-w>l", { desc = "Switch to right window" })
 
--- Define keymaps for plugins
+-- Plugin Keymaps
 vim.keymap.set("n", "<C-e>", "<cmd>Neotree toggle<CR>", { desc = "Toggle Neotree" })
-
 vim.keymap.set("n", "<leader>t", "<cmd>Telescope find_files<CR>", { desc = "Open Telescope" })
+
+
+
+vim.opt.cmdheight = 1
+
+vim.api.nvim_create_autocmd('CmdlineEnter', {
+    group = vim.api.nvim_create_augroup(
+        'cmdheight_1_on_cmdlineenter',
+        { clear = true }
+    ),
+    desc = 'Don\'t hide the status line when typing a command',
+    command = ':set cmdheight=1',
+})
+
+vim.api.nvim_create_autocmd('CmdlineLeave', {
+    group = vim.api.nvim_create_augroup(
+        'cmdheight_0_on_cmdlineleave',
+        { clear = true }
+    ),
+    desc = 'Hide cmdline when not typing a command',
+    command = ':set cmdheight=0',
+})
+
+vim.api.nvim_create_autocmd('BufWritePost', {
+    group = vim.api.nvim_create_augroup(
+        'hide_message_after_write',
+        { clear = true }
+    ),
+    desc = 'Get rid of message after writing a file',
+    pattern = { '*' },
+    command = 'redrawstatus',
+})
+
+
+
 
 local function popup(lines, opts)
 	opts = opts or {}
